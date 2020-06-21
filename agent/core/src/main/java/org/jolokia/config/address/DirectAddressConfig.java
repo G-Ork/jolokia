@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class DirectAddressConfig implements AddressConfigService {
 
-    private static final String CONFIG_KEY = "host";
+    static final String CONFIG_KEY = "host";
     
 	/**
 	 * {@inheritDoc}
