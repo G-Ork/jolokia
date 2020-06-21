@@ -52,6 +52,44 @@ public class NICMatchingConestfigServiceTest extends AddressConfigServiceTstBase
 
     
     /**
+     * Test the behavior if the service configuration contains an empty string.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_EMPTY() throws SocketException, UnknownHostException {
+        NICMatchingConfigService service = new NICMatchingConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(NICMatchingConfigService.CONFIG_KEY, "");
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
+    
+    /**
+     * Test the behavior if the service configuration contains <code>null</code> value.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_NULL() throws SocketException, UnknownHostException {
+        NICMatchingConfigService service = new NICMatchingConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(NICMatchingConfigService.CONFIG_KEY, null);
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
+    
+    /**
      * Test the behavior if configuring an invalid regular expression.
      * @throws SocketException If something went wrong enumerate the local interfaces.
      */
@@ -69,7 +107,8 @@ public class NICMatchingConestfigServiceTest extends AddressConfigServiceTstBase
         Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
         Assert.assertTrue(Collections.list(refNic.getInetAddresses()).contains(result.get()));
     }
-    
+
+
     /**
      * Test the behavior if configuring an invalid regular expression.
      * @throws SocketException If something went wrong enumerate the local interfaces.
@@ -88,7 +127,8 @@ public class NICMatchingConestfigServiceTest extends AddressConfigServiceTstBase
         Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
         Assert.assertEquals(result.get(), loopback);
     }
-    
+
+
     /**
      * Test the behavior if the service is not configured.
      * @throws SocketException If something went wrong enumerate the local interfaces.

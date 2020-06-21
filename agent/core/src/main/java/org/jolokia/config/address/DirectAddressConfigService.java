@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Georg Tsakumagos
  * @since 21.06.2020
  */
-public class DirectAddressConfig implements AddressConfigService {
+public class DirectAddressConfigService implements AddressConfigService {
 
     static final String CONFIG_KEY = "host";
     
@@ -40,13 +40,13 @@ public class DirectAddressConfig implements AddressConfigService {
 	public final AtomicReference<InetAddress> optain(final Map<String, String> agentConfig) {
 		final String host = agentConfig.get(CONFIG_KEY);
 
-		if (null != host && host.length() > 0) {
+		if (agentConfig.containsKey(CONFIG_KEY)) {
 		    // Mark responsibility to the callee
 			final AtomicReference<InetAddress> result = new AtomicReference<InetAddress>();
 			try {
 				if ("*".equals(host) || "0.0.0.0".equals(host)) {
 					return result; // null is the wildcard
-				} else if (host != null) {
+				} else {
 					result.set(InetAddress.getByName(host)); // some specific host
 				}
 			} catch (UnknownHostException e) {

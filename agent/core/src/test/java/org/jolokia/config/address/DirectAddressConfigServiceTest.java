@@ -27,26 +27,64 @@ import org.testng.annotations.Test;
  */
 
 /**
- * Testing {@link DirectAddressConfig}
+ * Testing {@link DirectAddressConfigService}
  * 
  * @author Georg Tsakumagos
  * @since 21.06.2020
  *
  */
-public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
+public class DirectAddressConfigServiceTest extends AddressConfigServiceTstBase {
     
     /**
      * Test the behavior if configuring an invalid regular expression.
      */
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void badPattern() {
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.put(DirectAddressConfig.CONFIG_KEY, PATTERN_BAD );
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, PATTERN_BAD );
         service.optain(agentConfig );
     }
 
+    
+    /**
+     * Test the behavior if the service configuration contains an empty string.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_EMPTY() throws SocketException, UnknownHostException {
+        DirectAddressConfigService service = new DirectAddressConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, "");
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
+    
+    /**
+     * Test the behavior if the service configuration contains <code>null</code> value.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_NULL() throws SocketException, UnknownHostException {
+        DirectAddressConfigService service = new DirectAddressConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, null);
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
     
     /**
      * Test the behavior if configuring an invalid regular expression.
@@ -56,10 +94,10 @@ public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
     public void matching_IP() throws SocketException {
         InetAddress refIP = this.getInterfaceIP();
         
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.put(DirectAddressConfig.CONFIG_KEY, refIP.getHostAddress() );
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, refIP.getHostAddress() );
         
         AtomicReference<InetAddress> result = service.optain(agentConfig);
         
@@ -73,10 +111,10 @@ public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
      */
     @Test()
     public void matching_Wildcard_Asterix() throws SocketException {
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.put(DirectAddressConfig.CONFIG_KEY, "*" );
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, "*" );
         
         AtomicReference<InetAddress> result = service.optain(agentConfig);
         
@@ -90,10 +128,10 @@ public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
      */
     @Test()
     public void matching_Wildcard_Zeros() throws SocketException {
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.put(DirectAddressConfig.CONFIG_KEY, "0.0.0.0" );
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, "0.0.0.0" );
         
         AtomicReference<InetAddress> result = service.optain(agentConfig);
         
@@ -108,11 +146,11 @@ public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
      */
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void nonMatching() throws SocketException, UnknownHostException {
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         InetAddress loopback = InetAddress.getByName(null);
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.put(DirectAddressConfig.CONFIG_KEY, "999.999.999.999" );
+        agentConfig.put(DirectAddressConfigService.CONFIG_KEY, "999.999.999.999" );
         
         AtomicReference<InetAddress> result = service.optain(agentConfig);
         
@@ -127,10 +165,10 @@ public class DirectAddressConfigTest extends AddressConfigServiceTstBase {
      */
     @Test()
     public void notConfigured() throws SocketException, UnknownHostException {
-        DirectAddressConfig service = new DirectAddressConfig();
+        DirectAddressConfigService service = new DirectAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
         
-        agentConfig.remove(DirectAddressConfig.CONFIG_KEY);
+        agentConfig.remove(DirectAddressConfigService.CONFIG_KEY);
         
         AtomicReference<InetAddress> result = service.optain(agentConfig);
         Assert.assertNull(result, ASSERT_NULL_REF);

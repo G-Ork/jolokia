@@ -2,13 +2,11 @@ package org.jolokia.config.address;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /*
  * 
@@ -38,8 +36,7 @@ import java.util.regex.PatternSyntaxException;
 public class NICMatchingConfigService implements AddressConfigService {
 
     static final String CONFIG_KEY = "nicmatch";
-    private static final String ERROR_PARSE_PATTERN = "Error parsing pattern: '%02$s' from config: '%01$s'.";
-    private static final String ERROR_ENUM_NICS = "Error enumerate system NIC information for config: '%01$s'.";
+    private static final String ERROR_APPLY_PATTERN = "Error configure IP by NIC name with pattern: '%02$s' from config: '%01$s'.";
 
     /**
      * Default Constructor
@@ -53,16 +50,16 @@ public class NICMatchingConfigService implements AddressConfigService {
      */
     @Override
     public final AtomicReference<InetAddress> optain(final Map<String, String> agentConfig) throws RuntimeException {
-        final String value = agentConfig.get(CONFIG_KEY);
 
-        if (null != value && value.length() > 0) {
+        if (agentConfig.containsKey(CONFIG_KEY)) {
             // Mark responsibility to the callee
             final AtomicReference<InetAddress> result = new AtomicReference<InetAddress>();
-            
-            try {
-                final Pattern matchPattern = Pattern.compile(value);
+            final String value = agentConfig.get(CONFIG_KEY);
 
-                try {
+            try {
+                if (null != value) {
+                    final Pattern matchPattern = Pattern.compile(value);
+
                     Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 
                     while (nets.hasMoreElements()) {
@@ -77,13 +74,9 @@ public class NICMatchingConfigService implements AddressConfigService {
                             }
                         }
                     }
-
-                } catch (final SocketException exception) {
-                    throw new IllegalArgumentException(String.format(ERROR_ENUM_NICS, CONFIG_KEY, value), exception);
                 }
-
-            } catch (final PatternSyntaxException exception) {
-                throw new IllegalArgumentException(String.format(ERROR_PARSE_PATTERN, CONFIG_KEY, value), exception);
+            } catch (final Throwable exception) {
+                throw new IllegalArgumentException(String.format(ERROR_APPLY_PATTERN, CONFIG_KEY, value), exception);
             } finally {
                 // // secure alternative -- if no host, use *loopback*
                 if (null == result.get()) {

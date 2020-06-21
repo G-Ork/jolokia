@@ -50,6 +50,44 @@ public class IPMatchingConfigServiceTest extends AddressConfigServiceTstBase {
 
     
     /**
+     * Test the behavior if the service configuration contains an empty string.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_EMPTY() throws SocketException, UnknownHostException {
+        IPMatchingConfigService service = new IPMatchingConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(IPMatchingConfigService.CONFIG_KEY, "");
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
+    
+    /**
+     * Test the behavior if the service configuration contains <code>null</code> value.
+     * @throws SocketException If something went wrong enumerate the local interfaces.
+     * @throws UnknownHostException If resvoling loopback interface fail.
+     */
+    @Test()
+    public void empty_NULL() throws SocketException, UnknownHostException {
+        IPMatchingConfigService service = new IPMatchingConfigService();
+        InetAddress loopback = InetAddress.getByName(null);
+        Map<String, String> agentConfig = newAgentConfig();
+        
+        agentConfig.put(IPMatchingConfigService.CONFIG_KEY, null);
+        
+        AtomicReference<InetAddress> result = service.optain(agentConfig);
+        
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), loopback);
+    }
+    
+    /**
      * Test the behavior if configuring an invalid regular expression.
      * @throws SocketException If something went wrong enumerate the local interfaces.
      */
@@ -67,7 +105,8 @@ public class IPMatchingConfigServiceTest extends AddressConfigServiceTstBase {
         Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
         Assert.assertEquals(result.get(), refIP);
     }
-    
+
+
     /**
      * Test the behavior if configuring a matcher that do not find a IP.
      * @throws SocketException If something went wrong enumerate the local interfaces.
@@ -86,7 +125,8 @@ public class IPMatchingConfigServiceTest extends AddressConfigServiceTstBase {
         Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
         Assert.assertEquals(result.get(), loopback);
     }
-    
+
+
     /**
      * Test the behavior if the service is not configured.
      * @throws SocketException If something went wrong enumerate the local interfaces.

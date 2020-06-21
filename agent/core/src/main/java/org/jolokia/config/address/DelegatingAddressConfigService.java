@@ -45,7 +45,7 @@ public class DelegatingAddressConfigService implements AddressConfigService {
 		super();
 
 		this.services = Collections.unmodifiableList(Arrays.asList(new AddressConfigService[] {
-				new DirectAddressConfig(),
+				new DirectAddressConfigService(),
 				new IPMatchingConfigService(),
 				new NICMatchingConfigService()
 		}));
