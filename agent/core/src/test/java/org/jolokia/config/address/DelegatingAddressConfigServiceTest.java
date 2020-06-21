@@ -1,6 +1,7 @@
 package org.jolokia.config.address;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,16 +36,18 @@ public class DelegatingAddressConfigServiceTest extends AddressConfigServiceTstB
 
     /**
      * Testing the Service if none delegates service is configured
+     * @throws UnknownHostException 
      */
     @Test
-    public void unconfigured() {
+    public void unconfigured() throws  UnknownHostException {
         DelegatingAddressConfigService service = new DelegatingAddressConfigService();
         Map<String, String> agentConfig = newAgentConfig();
 
         agentConfig.clear();
 
         AtomicReference<InetAddress> result = service.optain(agentConfig);
-        Assert.assertNull(result, ASSERT_NULL_REF);
+        Assert.assertNotNull(result, ASSERT_NOTNULL_REF);
+        Assert.assertEquals(result.get(), InetAddress.getByName(null));
     }
 
     /**

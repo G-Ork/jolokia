@@ -1,6 +1,7 @@
 package org.jolokia.config.address;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Delegating {@link AddressConfigService} wicht iterates over multiple service
  * to optain an valid {@link InetAddress} to bind the <em>Jolokia</em> service
- * to. 
+ * to.
  * 
  * 
  * @author Georg Tsakumagos
@@ -45,10 +46,7 @@ public class DelegatingAddressConfigService implements AddressConfigService {
 		super();
 
 		this.services = Collections.unmodifiableList(Arrays.asList(new AddressConfigService[] {
-				new DirectAddressConfigService(),
-				new IPMatchingConfigService(),
-				new NICMatchingConfigService()
-		}));
+				new DirectAddressConfigService(), new IPMatchingConfigService(), new NICMatchingConfigService() }));
 	}
 
 	/**
@@ -65,7 +63,11 @@ public class DelegatingAddressConfigService implements AddressConfigService {
 				return result;
 			}
 		}
-		
-		return null;
+
+		try {
+			return new AtomicReference<InetAddress>(InetAddress.getByName(null));
+		} catch (final UnknownHostException exception) {
+			throw new IllegalArgumentException("Can not lookup loopback interface", exception);
+		}
 	}
 }

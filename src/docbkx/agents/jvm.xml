@@ -114,9 +114,8 @@ java -javaagent:agent.jar=port=7777,host=localhost]]></programlisting>
         <td><constant>host</constant></td>
         <td>
           Hostaddress to which the HTTP server should bind to. If "*" or "0.0.0.0" is
-          given, the servers binds to every network interface. Errornous configuration will fallback to loopback interface.
-          This setting is mutually exclusive to <em>ipmatch</em> and <em>nicmatch</em>. Do not combine this settings.
-		  Bad configuration or errors resolving network informations will fallback to loopback interface for security reasons.
+          given, the servers binds to every network interface. This setting is mutually exclusive to <em>ipmatch</em> and <em>nicmatch</em>. 
+          Do not combine this settings. Bad configuration or errors resolving network informations will fallback to loopback interface for security reasons.
         </td>
         <td>
           <constant>localhost</constant>
